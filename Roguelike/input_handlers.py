@@ -1,0 +1,159 @@
+import tcod as tc
+
+from game_states import GameState
+
+def handle_keys(key, game_state):
+    if game_state == GameState.PLAYER_TURN:
+        return handle_player_turn_keys(key)
+    elif game_state == GameState.PLAYER_DEAD:
+        return handle_player_dead_keys(key)
+    elif game_state in (GameState.SHOW_INVENTORY, GameState.DROP_INVENTORY):
+        return handle_inventory_keys(key)
+    elif game_state == GameState.TARGETING:
+        return handle_targeting_keys(key)
+    elif game_state == GameState.LEVEL_UP:
+        return handle_level_up_menu(key)
+    elif game_state == GameState.CHARACTER_SCREEN:
+        return handle_character_screen(key)
+    elif game_state == GameState.PAUSE:
+        return handle_pause_menu(key)
+    return {}
+
+def handle_player_turn_keys(key):
+    key_char = chr(key.c)
+    
+    # Movement keys
+    if key.vk == tc.KEY_UP or key_char == 'j':
+        return {'move': (0,-1)}
+    elif key.vk == tc.KEY_DOWN or key_char == 'k':
+        return {'move': (0,1)}
+    elif key.vk == tc.KEY_LEFT or key_char == 'l':
+        return {'move': (-1, 0)}
+    elif key.vk == tc.KEY_RIGHT or key_char == ';':
+        return {'move': (1,0)}
+    elif key_char == 'u':
+        return {'move': (-1,-1)}
+    elif key_char == 'i':
+        return {'move': (1,-1)}
+    elif key_char == 'n':
+        return {'move': (-1,1)}
+    elif key_char == 'm':
+        return {'move': (1,1)}
+    elif key_char == 'z':
+        return {'wait': True}
+    
+    if key_char == 'g':
+        return {'pickup': True}
+    elif key_char == 'e':
+        return {'show_inventory': True}
+    elif key_char == 'd':
+        return {'drop_inventory': True}
+    elif key.vk == tc.KEY_ENTER:
+        return {'take_stairs': True}
+    
+    elif key_char == 'c':
+        return {'show_character_screen': True}
+    
+    if key.vk == tc.KEY_ENTER and key.lalt:
+        # Alt+Enter : toggle full-screen
+        return {'fullscreen': True}
+    
+    elif key.vk == tc.KEY_ESCAPE:
+        # Esc : escape the game
+        return {'exit': True}
+    
+    # No key was pressed
+    return {}
+
+def handle_player_dead_keys(key):
+    key_char = chr(key.c)
+    
+    if key_char == 'i':
+        return {'show_inventory': True}
+    
+    if key.vk == tc.KEY_ENTER and key.lalt:
+        # Alt+Enter: toggle full screen
+        return {'fullscreen': True}
+    elif key.vk == tc.KEY_ESCAPE:
+        # Exit the menu
+        return {'exit': True}
+    
+    return {}
+
+def handle_inventory_keys(key):
+    index = key.c - ord('a')
+    
+    if index >= 0:
+        return {'inventory_index': index}
+    
+    if key.vk == tc.KEY_ENTER and key.lalt:
+       # Alt+Enter: toggle full screen
+       return {'fullscreen': True}
+    elif key.vk == tc.KEY_ESCAPE:
+       # Exit the menu
+       return {'exit': True}
+
+    return {}
+
+def handle_targeting_keys(key):
+    if key.vk == tc.KEY_ESCAPE:
+        return {'exit': True}
+    
+    return {}
+
+def handle_mouse(mouse):
+    (x,y) = (mouse.cx, mouse.cy)
+    
+    if mouse.lbutton_pressed:
+        return {'left_click': (x,y)}
+    elif mouse.rbutton_pressed:
+        return {'right_click': (x,y)}
+    
+    return{}
+
+def handle_main_menu(key):
+    key_char = chr(key.c)
+    
+    if key_char == 'a':
+        return {'new_game': True}
+    elif key_char == 'b':
+        return {'load_saved_game': True}
+    elif key_char == 'c' or key.vk == tc.KEY_ESCAPE:
+        return {'exit': True}
+    
+    return {}
+
+def handle_level_up_menu(key):
+    if key:
+        key_char = chr(key.c)
+        
+        if key_char == 'a':
+            return {'level_up': 'hp'}
+        elif key_char == 'b':
+            return {'level_up': 'att'}
+        elif key_char == 'c':
+            return {'level_up': 'str'}
+        elif key_char == 'd':
+            return {'level_up': 'def'}
+        
+    return {}
+
+def handle_pause_menu(key):
+    key_char = chr(key.c)
+    
+    if key.vk == tc.KEY_ENTER and key.lalt:
+        return {'fullscreen': True}
+    if key_char == 'a' or key.vk == tc.KEY_ESCAPE:
+        return {'exit': True}
+    elif key_char == 'b':
+        return {'main_menu': True}
+    elif key_char == 'c':
+        return {'quit_game': True}
+    
+    return {}
+
+def handle_character_screen(key):
+    if key.vk == tc.KEY_ESCAPE:
+        return {'exit': True}
+    
+    return {}
