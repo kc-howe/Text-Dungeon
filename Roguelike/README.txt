@@ -33,7 +33,8 @@ Esc - Pause
 
 DEV NOTE:
 
-Please for the love of God do not close the window
-using the 'X' button. This will require that you
-restart the kernel in order to play again. I'll
-hopefully get to this soon.
+If running engine.py from an IDE, please for the
+love of God do not close the window using the 'X'
+button. This will require that you restart the
+kernel in order to play again. I'll hopefully fix
+this soon.
