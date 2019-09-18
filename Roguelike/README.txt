@@ -11,6 +11,11 @@ enemies to proceed deeper into the dungeon.
 Code based on the Roguelike Tutorial Revised at
 http://rogueliketutorials.com/
 
+Requies the installation of TCOD. (For detailed
+installation instructions, see https://python-
+tcod.readthedocs.io/en/latest/installation.html)
+
+
 
 CONTROLS:
 
@@ -32,6 +37,7 @@ Z - Wait
 Enter - Use stairs
 
 Esc - Pause
+
 
 
 DEV NOTE:
