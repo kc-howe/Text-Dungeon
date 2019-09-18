@@ -8,6 +8,9 @@ Text Dungeon is a simple roguelike dungeon crawler.
 Explore the floors, pick up items, and fight off
 enemies to proceed deeper into the dungeon.
 
+Code based on the Roguelike Tutorial Revised at
+http://rogueliketutorials.com/
+
 
 CONTROLS:
 
