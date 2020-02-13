@@ -10,7 +10,7 @@ from components.item import Item
 from components.stairs import Stairs
 from entity import Entity
 from game_messages import Message
-from item_functions import cast_confuse, cast_fireball, cast_lightning, cast_projectile, heal
+from item_functions import cast_confuse, cast_fireball, cast_freezing, cast_lightning, cast_projectile, heal
 from map_objects.tile import Tile
 from map_objects.rectangle import Rect
 from random_utils import from_dungeon_level, random_choice_from_dict
@@ -109,7 +109,7 @@ class GameMap:
                 rooms.append(new_room)
                 num_rooms += 1
         stairs_component = Stairs(self.dungeon_level + 1)
-        down_stairs = Entity(last_room_center_x, last_room_center_y, '>', tc.white, 'Stairs',
+        down_stairs = Entity(last_room_center_x, last_room_center_y, '>', tc.silver, 'Stairs',
                              render_order=RenderOrder.STAIRS, stairs=stairs_component)
         entities.append(down_stairs)
     
@@ -132,10 +132,11 @@ class GameMap:
         
         item_chances = {
                 'arrow': from_dungeon_level([[20,2], [15,4], [10,7]], self.dungeon_level),
-                'confusion_scroll': from_dungeon_level([[10,2]], self.dungeon_level),
-                'fireball_scroll': from_dungeon_level([[20,8]], self.dungeon_level),
+                'confusion_rune': from_dungeon_level([[10,2]], self.dungeon_level),
+                'fireball_rune': from_dungeon_level([[15,8]], self.dungeon_level),
+                'freezing_rune': from_dungeon_level([[15,8]], self.dungeon_level),
                 'healing_potion': 35,
-                'lightning_scroll': from_dungeon_level([[20,5]], self.dungeon_level),
+                'lightning_rune': from_dungeon_level([[20,5]], self.dungeon_level),
                 'none': from_dungeon_level([[60,1], [65,4], [50,7], [45,10]], self.dungeon_level),
                 'buckler': from_dungeon_level([[5,4]], self.dungeon_level),
                 'round_shield': from_dungeon_level([[5,7]], self.dungeon_level),
@@ -269,7 +270,7 @@ class GameMap:
                 
                 if item_choice == 'healing_potion':
                     item_component = Item(use_function=heal, amount=40)
-                    item = Entity(x, y, '!', tc.celadon, 'Healing Potion', render_order = RenderOrder.ITEM,
+                    item = Entity(x, y, '!', tc.celadon, 'Potion of Healing', render_order = RenderOrder.ITEM,
                                   item=item_component)
                 elif item_choice == 'arrow':
                     item_component = Item(use_function=cast_projectile, targeting=True, targeting_message=Message(
@@ -299,17 +300,21 @@ class GameMap:
                 elif item_choice == 'tower_shield':
                     equippable_component = Equippable(EquipmentSlots.OFF_HAND, def_bonus=4)
                     item = Entity(x, y, '[', tc.brass, 'Tower Shield', equippable=equippable_component)
-                elif item_choice == 'fireball_scroll':
+                elif item_choice == 'fireball_rune':
                     item_component = Item(game_map=self, use_function=cast_fireball, targeting=True, targeting_message=Message(
                             'Left-cick a target to fire at, or right-click to cancel.', tc.light_cyan), damage=25, radius=3)
-                    item = Entity(x, y, '?', tc.red, 'Fireball Scroll', render_order=RenderOrder.ITEM, item=item_component)
-                elif item_choice == 'confusion_scroll':
+                    item = Entity(x, y, '<', tc.red, 'Rune of Fireball', render_order=RenderOrder.ITEM, item=item_component)
+                elif item_choice == 'freezing_rune':
+                    item_component = Item(use_function=cast_freezing, targeting=True, targeting_message=Message(
+                            'Left-click an enemy to freeze it, or right-click to cancel.', tc.light_cyan))
+                    item = Entity(x, y, '<', tc.cyan, 'Rune of Freezing', render_order=RenderOrder.ITEM, item=item_component)
+                elif item_choice == 'confusion_rune':
                     item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(
                             'Left-cick an enemy to confuse it, or right-click to cancel.', tc.light_cyan))
-                    item = Entity(x, y, '?', tc.light_pink, 'Confusion Scroll', render_order=RenderOrder.ITEM, item=item_component)
-                elif item_choice == 'lightning_scroll':
+                    item = Entity(x, y, '<', tc.light_pink, 'Rune of Confusion', render_order=RenderOrder.ITEM, item=item_component)
+                elif item_choice == 'lightning_rune':
                     item_component = Item(use_function=cast_lightning, damage=40, maximum_range=5)
-                    item = Entity(x, y, '?', tc.yellow, 'Lightning Scroll', render_order=RenderOrder.ITEM,
+                    item = Entity(x, y, '<', tc.yellow, 'Rune of Lightning', render_order=RenderOrder.ITEM,
                                   item=item_component)
                 else:
                     continue

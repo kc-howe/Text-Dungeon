@@ -1,7 +1,7 @@
 import math
 import tcod as tc
 
-from components.ai import ConfusedMonster
+from components.ai import ConfusedMonster, FrozenMonster
 from entity import Entity
 from game_messages import Message
 
@@ -121,5 +121,33 @@ def cast_projectile(*args, **kwargs):
             results.append({'consumed': True, 'message': Message('The {0} is pierced by the arrow for {1} hit points.'.format(entity.name, damage))})
             results.extend(entity.fighter.take_damage(damage))
             break
+    
+    return results
+
+def cast_freezing(*args, **kwargs):
+    entities = kwargs.get('entities')
+    fov_map = kwargs.get('fov_map')
+    target_x = kwargs.get('target_x')
+    target_y = kwargs.get('target_y')
+    
+    results = []
+    
+    if not tc.map_is_in_fov(fov_map, target_x, target_y):
+        results.append({'consumed': False, 'message': Message('You cannot target a tile outside your field of view.', tc.yellow)})
+        return results
+    
+    for entity in entities:
+        if entity.x == target_x and entity.y == target_y and entity.ai:
+            frozen_ai = FrozenMonster(entity.ai, entity.color, 10)
+            
+            frozen_ai.owner = entity
+            entity.ai = frozen_ai
+            entity.color = tc.lighter_cyan
+            
+            results.append({'consumed': True, 'message': Message('The {0} is frozen in place!'.format(entity.name), tc.light_green)})
+            
+            break
+    else:
+        results.append({'consumed': False, 'message': Message('There is no targetable enemy there.', tc.yellow)})
     
     return results

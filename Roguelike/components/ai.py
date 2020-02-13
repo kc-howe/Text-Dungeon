@@ -77,3 +77,25 @@ class ConfusedMonster:
                 results.append({'message': Message('The {0} is no longer confused!'.format(self.owner.name), tc.red)})
         
         return results
+
+class FrozenMonster:
+    def __init__(self, previous_ai=None, previous_color=None, number_of_turns=None):
+        self.previous_ai = previous_ai
+        self.previous_color = previous_color
+        self.number_of_turns = number_of_turns
+    
+    def take_turn(self, target, fov_map, game_map, entities):
+        results = []
+        
+        monster = self.owner
+        if self.number_of_turns > 0:
+            if game_map.tiles[monster.x][monster.y].burning:
+                self.number_of_turns = 0
+            elif self.number_of_turns is not None:
+                self.number_of_turns -= 1
+        if self.number_of_turns <= 0:
+            self.owner.ai = self.previous_ai
+            self.owner.color = self.previous_color
+            results.append({'message': Message('The {0} is no longer frozen!'.format(self.owner.name), tc.red)})
+        
+        return results

@@ -7,10 +7,12 @@ from menu import character_screen, inventory_menu, level_up_menu, pause_menu
 from random_utils import from_dungeon_level
 
 class RenderOrder(Enum):
-    STAIRS = 1
-    CORPSE = 2
-    ITEM = 3
-    ACTOR = 4
+    BOTTOM = 1
+    STAIRS = 2
+    CORPSE = 3
+    ITEM = 4
+    ACTOR = 5
+    TOP = 6
     
 def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width,
                panel_height, panel_y, mouse, game_state):
@@ -50,7 +52,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
                     else:
                         tc.console_set_default_foreground(con, colors.get('dark_ground'))
                         tc.console_put_char(con, x, y, '_', tc.BKGND_NONE)
-                    
+            
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
     
     # Draw all entities in the list
@@ -100,12 +102,12 @@ def clear_all(con, entities):
         clear_entity(con, entity)
 
 def draw_entity(con, entity, fov_map, game_map, colors):
+    if game_map.tiles[entity.x][entity.y].explored:
+        tc.console_set_default_foreground(con, colors.get('dark_ground'))
+        tc.console_put_char(con, entity.x, entity.y, '_', tc.BKGND_NONE)
     if tc.map_is_in_fov(fov_map, entity.x, entity.y) or (entity.stairs and game_map.tiles[entity.x][entity.y].explored):
         tc.console_set_default_foreground(con, entity.color)
         tc.console_put_char(con, entity.x, entity.y, entity.char, tc.BKGND_NONE)
-    elif game_map.tiles[entity.x][entity.y].explored:
-        tc.console_set_default_foreground(con, colors.get('dark_ground'))
-        tc.console_put_char(con, entity.x, entity.y, '_', tc.BKGND_NONE)
 
 def clear_entity(con, entity):
     # Erase the character that represents this object
